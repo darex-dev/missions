@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: ${MISSION_DB_URL}
+    username: ${MISSION_DB_USERNAME}
+    password: ${MISSION_DB_PASSWORD:}
+  sql:
+    init:
+      mode: always
+server:
+  address: 127.0.0.1
+  port: ${MISSION_PORT:8092}
