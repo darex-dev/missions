@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.16'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+repositories { mavenCentral() }
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-artemis'
+    implementation 'org.apache.activemq:artemis-jakarta-server'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+if (providers.gradleProperty('reference').isPresent()) {
+    tasks.named('compileJava') {
+        setSource(files(fileTree('src/main/java') { exclude '**/Exercise.java' }, fileTree('src/reference/java')))
+    }
+}
+if (providers.gradleProperty('judge').isPresent()) {
+    sourceSets.test.java.srcDir 'src/hidden/java'
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+springBoot { mainClass = 'darex.distributed.Application' }
+tasks.register('runBroker', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'darex.distributed.Broker'
+}
+tasks.named('test') {
+    useJUnitPlatform()
+    systemProperty 'mission.runtimeClasspath', sourceSets.main.runtimeClasspath.asPath
+}
+
+tasks.register('starterZip', Zip) {
+    archiveBaseName = project.name + '-starter'
+    from(projectDir) { include 'README.md', 'settings.gradle', 'build.gradle', '.gitignore', 'src/main/**', 'src/test/**' }
+    from('../../backend') { include 'gradlew', 'gradlew.bat', 'gradle/wrapper/**' }
+}
