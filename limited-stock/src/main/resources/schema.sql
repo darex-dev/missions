@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS products (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    stock INT NOT NULL CHECK (stock >= 0)
+);
+CREATE TABLE IF NOT EXISTS orders (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    product_id BIGINT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
