@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${MISSION_DB_URL}
+    username: ${MISSION_DB_USERNAME}
+    password: ${MISSION_DB_PASSWORD:}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:${MISSION_ROLE}.sql
+  artemis:
+    mode: native
+    # 별도 브로커에만 연결해 애플리케이션 안에서 브로커를 중복 기동하지 않는다.
+    embedded:
+      enabled: false
+    broker-url: ${MISSION_BROKER_URL:tcp://127.0.0.1:61616?callTimeout=2000&initialConnectAttempts=1&reconnectAttempts=0&blockOnDurableSend=true}
+mission:
+  role: ${MISSION_ROLE}
+server:
+  address: 127.0.0.1
+  port: ${MISSION_PORT:8093}
